@@ -1,0 +1,22 @@
+# Application Profile - With Eureka (Service Discovery Enabled)
+# Use this profile when Eureka Server is running
+# mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=eureka"
+
+eureka:
+  client:
+    enabled: true
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  cloud:
+    discovery:
+      enabled: true
+
+logging:
+  level:
+    com.netflix.discovery: INFO
+    org.springframework.cloud.netflix.eureka: INFO
+

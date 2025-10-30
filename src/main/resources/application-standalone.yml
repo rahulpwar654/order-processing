@@ -1,0 +1,21 @@
+# Application Profile - Standalone (No Eureka)
+# Use this profile when running without Eureka Server
+# mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=standalone"
+
+spring:
+  cloud:
+    discovery:
+      enabled: false
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+# Override for development - disable Eureka completely
+logging:
+  level:
+    com.netflix.discovery: ERROR
+    org.springframework.cloud.netflix.eureka: ERROR
+

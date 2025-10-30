@@ -109,6 +109,24 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
+		<!-- Spring Cloud Netflix Eureka Client for Service Discovery -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+		<!-- Spring Cloud LoadBalancer for Client-Side Load Balancing -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-loadbalancer</artifactId>
+		</dependency>
+
+		<!-- Spring WebFlux for WebClient (reactive client) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
     </dependencies>
 	<dependencyManagement>
 		<dependencies>

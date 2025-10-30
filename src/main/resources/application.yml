@@ -175,5 +175,32 @@ tracing:
     endpoint: http://localhost:9411/api/v2/spans
     enabled: true
 
+# Eureka Client Configuration for Service Discovery
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
+    healthcheck:
+      enabled: true
+    # Don't fail if Eureka is not available
+    eureka-server-connect-timeout-seconds: 5
+    eureka-server-read-timeout-seconds: 5
+    # Retry configuration
+    initial-instance-info-replication-interval-seconds: 5
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    metadata-map:
+      zone: zone1
+      version: ${project.version:1.0.0}
+      startup: ${random.int}
+    status-page-url-path: /actuator/info
+    health-check-url-path: /actuator/health
+
 
 
