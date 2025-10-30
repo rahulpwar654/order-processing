@@ -2,6 +2,7 @@ package com.example.order.dto;
 
 import com.example.order.model.OrderStatus;
 import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderResponse implements Serializable {
+public class OrderResponse extends RepresentationModel<OrderResponse> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private UUID id;

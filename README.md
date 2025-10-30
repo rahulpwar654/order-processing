@@ -376,56 +376,7 @@ spring:
       path: /h2-console
 ```
 
-## Testing
 
-See [doc/TEST_COVERAGE.md](doc/TEST_COVERAGE.md) for comprehensive test documentation.
-
-**Summary**:
-- 51 tests total
-- 22 service layer unit tests
-- 17 controller unit tests
-- 3 scheduler unit tests
-- 9 integration tests
-- 1 application context test
-- 100% pass rate ✅
-
-## Resilience & Performance
-
-### Circuit Breaker
-- **Automatic failure detection**: Opens circuit at 50% failure rate
-- **Fast failures**: No cascading failures when service is down
-- **Automatic recovery**: Tests service health and closes circuit
-- **Fallback responses**: Graceful error messages
-
-### Rate Limiting
-- **Write operations**: 20 requests/second
-- **Read operations**: 200 requests/second
-- **Per-endpoint limits**: Different limits for different operations
-- **Fair queuing**: FIFO request processing
-
-### Caching
-- **Redis backend**: Distributed caching
-- **70-80% DB load reduction**: Significant performance improvement
-- **Multiple cache regions**: Orders, lists, customer orders
-- **Smart invalidation**: Cache updates on data changes
-
-### Performance Metrics
-- **Get Order (cached)**: 2ms (96% faster)
-- **List Orders (cached)**: 5ms (97% faster)
-- **Throughput**: 1000+ requests/second
-- **Database queries**: Reduced by 70-80%
-
-See detailed documentation:
-- [Performance Optimization](doc/PERFORMANCE_OPTIMIZATION.md)
-- [Circuit Breaker & Rate Limiting](doc/CIRCUIT_BREAKER_RATE_LIMITING.md)
-- [Resilience Implementation](doc/RESILIENCE_IMPLEMENTATION.md)
-
-## Contributing
-
-1. Write tests for new features
-2. Follow existing code style
-3. Update documentation
-4. Ensure all tests pass before committing
 
 ## License
 
