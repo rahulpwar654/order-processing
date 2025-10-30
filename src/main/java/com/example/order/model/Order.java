@@ -15,7 +15,8 @@ import java.util.UUID;
     @Index(name = "idx_order_customer_id", columnList = "customerId"),
     @Index(name = "idx_order_status", columnList = "status"),
     @Index(name = "idx_order_created_at", columnList = "createdAt"),
-    @Index(name = "idx_order_status_canceled", columnList = "status, canceledAt")
+    @Index(name = "idx_order_status_canceled", columnList = "status, canceledAt"),
+    @Index(name = "idx_order_idempotency_key", columnList = "idempotencyKey")
 })
 @Getter
 @Setter
@@ -41,6 +42,9 @@ public class Order implements Serializable {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
+
+    @Column(unique = true, length = 255)
+    private String idempotencyKey;
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt;

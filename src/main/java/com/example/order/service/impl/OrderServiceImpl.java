@@ -3,6 +3,7 @@ package com.example.order.service.impl;
 import com.example.order.dto.*;
 import com.example.order.exception.ConflictException;
 import com.example.order.exception.NotFoundException;
+import com.example.order.exception.ServiceUnavailableException;
 import com.example.order.model.Order;
 import com.example.order.model.OrderItem;
 import com.example.order.model.OrderStatus;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -58,9 +60,30 @@ public class OrderServiceImpl implements OrderService {
             log.error("Order creation failed: No items provided");
             throw new ConflictException("Order must contain at least one item");
         }
+
+        // Generate or use provided idempotency key
+        String idempotencyKey = request.getIdempotencyKey();
+        if (idempotencyKey == null || idempotencyKey.isBlank()) {
+            idempotencyKey = com.example.order.util.IdempotencyKeyGenerator.generateKey(request);
+            log.debug("Generated idempotency key: {}", idempotencyKey);
+        } else {
+            log.debug("Using provided idempotency key: {}", idempotencyKey);
+        }
+
+        // Check for existing order with same idempotency key
+        if (idempotencyKey != null) {
+            Optional<Order> existingOrder = orderRepository.findByIdempotencyKey(idempotencyKey);
+            if (existingOrder.isPresent()) {
+                log.info("Order already exists with idempotency key: {}, returning existing order: {}",
+                         idempotencyKey, existingOrder.get().getId());
+                return OrderMapper.toResponse(existingOrder.get());
+            }
+        }
+
         Order order = Order.builder()
                 .customerId(request.getCustomerId())
                 .status(OrderStatus.PENDING)
+                .idempotencyKey(idempotencyKey)
                 .build();
 
         BigDecimal total = BigDecimal.ZERO;
@@ -255,7 +278,7 @@ public class OrderServiceImpl implements OrderService {
      */
     private OrderResponse createFallback(OrderCreateRequest request, Exception ex) {
         log.error("Circuit breaker triggered for order creation: {}", ex.getMessage());
-        throw new ConflictException("Order service is temporarily unavailable. Please try again later.");
+        throw new ServiceUnavailableException("Order service is temporarily unavailable. Please try again later.");
     }
 
     /**
@@ -264,7 +287,7 @@ public class OrderServiceImpl implements OrderService {
      */
     private OrderResponse getByIdFallback(UUID id, Exception ex) {
         log.error("Circuit breaker triggered for getById({}): {}", id, ex.getMessage());
-        throw new NotFoundException("Order service is temporarily unavailable. Please try again later.");
+        throw new ServiceUnavailableException("Order service is temporarily unavailable. Please try again later.");
     }
 
     /**
@@ -272,7 +295,7 @@ public class OrderServiceImpl implements OrderService {
      * Returns an empty page when circuit is open.
      */
     private Page<OrderResponse> listFallback(OrderStatus status, Pageable pageable, Exception ex) {
-        throw new ConflictException("Order listing service is temporarily unavailable. Please try again later.");
+        throw new ServiceUnavailableException("Order listing service is temporarily unavailable. Please try again later.");
     }
 
     /**
@@ -280,7 +303,7 @@ public class OrderServiceImpl implements OrderService {
      * Returns a service unavailable error when circuit is open.
      */
     private OrderResponse updateStatusFallback(UUID id, OrderStatus newStatus, Exception ex) {
-        throw new ConflictException("Order update service is temporarily unavailable. Please try again later.");
+        throw new ServiceUnavailableException("Order update service is temporarily unavailable. Please try again later.");
     }
 
     /**
@@ -288,7 +311,7 @@ public class OrderServiceImpl implements OrderService {
      * Returns an empty page when circuit is open.
      */
     private Page<OrderResponse> getOrdersByCustomerFallback(String customerId, Pageable pageable, Exception ex) {
-        throw new ConflictException("Customer order service is temporarily unavailable. Please try again later.");
+        throw new ServiceUnavailableException("Customer order service is temporarily unavailable. Please try again later.");
     }
 
     /**
@@ -296,6 +319,6 @@ public class OrderServiceImpl implements OrderService {
      * Returns a service unavailable error when circuit is open.
      */
     private OrderResponse cancelFallback(UUID id, Exception ex) {
-        throw new ConflictException("Order cancellation service is temporarily unavailable. Please try again later.");
+        throw new ServiceUnavailableException("Order cancellation service is temporarily unavailable. Please try again later.");
     }
 }

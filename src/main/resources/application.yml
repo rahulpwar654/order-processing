@@ -56,6 +56,13 @@ spring:
       cache-null-values: false
       use-key-prefix: true
 
+  # Jackson Configuration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
 # H2 Console (Development only)
   h2:
     console:
@@ -65,9 +72,15 @@ spring:
 # Logging Configuration
 logging:
   level:
+    root: INFO
+    com.example.order: DEBUG
     org.hibernate.SQL: DEBUG
-    org.springframework.cache: DEBUG
-    com.example.order: INFO
+    org.springframework.cache: INFO
+    org.springframework.web: DEBUG
+    io.micrometer.tracing: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}] [%X{requestId:-}]"
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
 
 # Server Configuration
 server:
@@ -162,17 +175,5 @@ tracing:
     endpoint: http://localhost:9411/api/v2/spans
     enabled: true
 
-# Logging Configuration for Tracing
-logging:
-  pattern:
-    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}] [%X{requestId:-}]"
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-  level:
-    root: INFO
-    com.example.order: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.springframework.cache: INFO
-    org.springframework.web: DEBUG
-    io.micrometer.tracing: DEBUG
 
 

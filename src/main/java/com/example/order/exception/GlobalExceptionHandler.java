@@ -1,5 +1,6 @@
 package com.example.order.exception;
 
+import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
@@ -68,6 +69,28 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(RequestNotPermitted.class)
+    public ResponseEntity<ApiError> handleRateLimit(RequestNotPermitted ex, HttpServletRequest req) {
+        ApiError error = ApiError.builder()
+                .timestamp(Instant.now())
+                .path(req.getRequestURI())
+                .code("TOO_MANY_REQUESTS")
+                .message("Too many requests. Please try again later.")
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<ApiError> handleServiceUnavailable(ServiceUnavailableException ex, HttpServletRequest req) {
+        ApiError error = ApiError.builder()
+                .timestamp(Instant.now())
+                .path(req.getRequestURI())
+                .code("SERVICE_UNAVAILABLE")
+                .message(ex.getMessage())
+                .build();
+        return new ResponseEntity<>(error, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest req) {
         ApiError error = ApiError.builder()
@@ -79,4 +102,3 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
-

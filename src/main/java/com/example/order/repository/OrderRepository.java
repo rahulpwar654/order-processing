@@ -20,6 +20,10 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     @Query("select o from Order o where o.id = :id")
     Optional<Order> findByIdWithItems(@Param("id") UUID id);
 
+    // Find order by idempotency key for duplicate prevention
+    @EntityGraph(attributePaths = {"items"})
+    Optional<Order> findByIdempotencyKey(String idempotencyKey);
+
     // Optimized pagination query
     @EntityGraph(attributePaths = {"items"})
     Page<Order> findAllByStatus(OrderStatus status, Pageable pageable);
