@@ -38,6 +38,12 @@ A robust e-commerce order processing backend system built with Spring Boot 3, im
 - **Mockito** (mocking)
 - **MockMvc** (API testing)
 
+
+## External Pods
+
+- **Zipkin**
+- **Redis 7.x** (for caching)
+- 
 ## Project Structure
 
 ```
@@ -147,17 +153,20 @@ http://localhost:8080/api/orders
 **Request Body**:
 ```json
 {
-  "customerId": "cust-123",
+  "customerId": "11",
   "items": [
     {
-      "productId": "sku-1",
-      "quantity": 2,
-      "unitPrice": 10.50
-    },
-    {
-      "productId": "sku-2",
-      "quantity": 1,
-      "unitPrice": 5.00
+      "productId": "Paper",
+      "quantity": 50,
+      "unitPrice": 5
+    },{
+      "productId": "ABC",
+      "quantity": 10,
+      "unitPrice": 40
+    },{
+      "productId": "XYZ",
+      "quantity": 5,
+      "unitPrice": 100
     }
   ]
 }
@@ -166,26 +175,32 @@ http://localhost:8080/api/orders
 **Response** (201 Created):
 ```json
 {
-  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  "customerId": "cust-123",
-  "status": "PENDING",
-  "totalAmount": 26.00,
+  "id": "9c6be681-1694-4104-90ce-2f938eecea33",
+  "customerId": "11",
+  "status": "PROCESSING",
+  "totalAmount": 1150,
   "items": [
     {
-      "productId": "sku-1",
-      "quantity": 2,
-      "unitPrice": 10.50,
-      "lineTotal": 21.00
+      "productId": "Paper",
+      "quantity": 50,
+      "unitPrice": 5,
+      "lineTotal": 250
     },
     {
-      "productId": "sku-2",
-      "quantity": 1,
-      "unitPrice": 5.00,
-      "lineTotal": 5.00
+      "productId": "ABC",
+      "quantity": 10,
+      "unitPrice": 40,
+      "lineTotal": 400
+    },
+    {
+      "productId": "XYZ",
+      "quantity": 5,
+      "unitPrice": 100,
+      "lineTotal": 500
     }
   ],
-  "createdAt": "2025-10-30T06:00:00Z",
-  "updatedAt": "2025-10-30T06:00:00Z",
+  "createdAt": "2025-10-30T14:34:12.716302Z",
+  "updatedAt": "2025-10-30T14:34:12.716302Z",
   "canceledAt": null
 }
 ```
@@ -375,57 +390,6 @@ spring:
       enabled: true
       path: /h2-console
 ```
-
-## Testing
-
-See [doc/TEST_COVERAGE.md](doc/TEST_COVERAGE.md) for comprehensive test documentation.
-
-**Summary**:
-- 51 tests total
-- 22 service layer unit tests
-- 17 controller unit tests
-- 3 scheduler unit tests
-- 9 integration tests
-- 1 application context test
-- 100% pass rate ✅
-
-## Resilience & Performance
-
-### Circuit Breaker
-- **Automatic failure detection**: Opens circuit at 50% failure rate
-- **Fast failures**: No cascading failures when service is down
-- **Automatic recovery**: Tests service health and closes circuit
-- **Fallback responses**: Graceful error messages
-
-### Rate Limiting
-- **Write operations**: 20 requests/second
-- **Read operations**: 200 requests/second
-- **Per-endpoint limits**: Different limits for different operations
-- **Fair queuing**: FIFO request processing
-
-### Caching
-- **Redis backend**: Distributed caching
-- **70-80% DB load reduction**: Significant performance improvement
-- **Multiple cache regions**: Orders, lists, customer orders
-- **Smart invalidation**: Cache updates on data changes
-
-### Performance Metrics
-- **Get Order (cached)**: 2ms (96% faster)
-- **List Orders (cached)**: 5ms (97% faster)
-- **Throughput**: 1000+ requests/second
-- **Database queries**: Reduced by 70-80%
-
-See detailed documentation:
-- [Performance Optimization](doc/PERFORMANCE_OPTIMIZATION.md)
-- [Circuit Breaker & Rate Limiting](doc/CIRCUIT_BREAKER_RATE_LIMITING.md)
-- [Resilience Implementation](doc/RESILIENCE_IMPLEMENTATION.md)
-
-## Contributing
-
-1. Write tests for new features
-2. Follow existing code style
-3. Update documentation
-4. Ensure all tests pass before committing
 
 ## License
 
